@@ -3,27 +3,116 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>    
-    <title>Cuestionario</title>
+    <title>Cuestionario en Modal</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
+        @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            background-color: #F8F9FD;
+            font-family: 'Muli', sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: #ffffff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 50px;
+        .trigger-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            cursor: pointer;
         }
 
-        h1 {
+        .trigger-icon i {
+            font-size: 50px;
+            color: #202937;
+        }
+
+        .custom-modal-container {
+            position: fixed;
+            background-color: rgba(0,0,0,0.67);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 9999999999;
+        }
+
+        .custom-modal-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .custom-modal {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 90%;
+            width: 600px;
+            font-family: Open Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+            position: relative;
+        }
+
+        .custom-header {
+            background-color: #202937;
+            color: #fff;
+            padding: 30px 20px;
             text-align: center;
+            position: relative;
+        }
+
+        .custom-header h4 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .custom-content {
+            background-color: #fff;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Estilos del Quiz */
+        .quiz-container {
+            max-width: 100%;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .quiz-container h1 {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .progress {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .progress span {
+            font-size: 14px;
+            color: #555;
         }
 
         .question {
@@ -35,10 +124,23 @@
             display: block;
         }
 
+        .question h2 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #202937;
+        }
+
+        .question img {
+            max-width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
         .options label {
             display: block;
             margin-bottom: 10px;
             cursor: pointer;
+            font-size: 0.95em;
         }
 
         .options input {
@@ -50,6 +152,7 @@
             font-weight: bold;
             padding: 10px;
             border-radius: 5px;
+            display: none;
         }
 
         .feedback.correct {
@@ -67,14 +170,22 @@
             background: #e2e3e5;
             padding: 10px;
             border-radius: 5px;
+            display: none;
+        }
+
+        .explanation img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
         }
 
         .controls {
             text-align: center;
+            margin-top: 20px;
         }
 
         .btn {
-            background: #007bff;
+            background: #202937d9;
             border: none;
             color: #ffffff;
             padding: 10px 15px;
@@ -82,6 +193,7 @@
             cursor: pointer;
             border-radius: 5px;
             font-size: 16px;
+            transition: background 0.3s;
         }
 
         .btn:disabled {
@@ -90,23 +202,15 @@
         }
 
         .btn:hover:enabled {
-            background: #0056b3;
+            background: #202937;
         }
 
-        .progress {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .progress span {
-            font-size: 14px;
-            color: #555;
+        /* Clase para indicar que el botón se presionó */
+        .btn.pressed {
+            background: #202937;
         }
 
         @media (max-width: 600px) {
-            .container {
-                margin-top: 20px;
-            }
             .btn {
                 width: 100%;
                 margin: 5px 0;
@@ -116,65 +220,110 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>Cuestionario</h1>
-    <div class="progress"><span id="progress-text">Pregunta 1 de 4</span></div>
-    <!-- Pregunta 1 -->
-    <div class="question active" data-correct="0" data-explanation="Esta es la explicación de la respuesta correcta para la pregunta 1.">
-        <h2>¿Cuál es la capital de Francia?</h2>
-        <div class="options">
-            <label><input type="radio" name="q1" value="0"> París</label>
-            <label><input type="radio" name="q1" value="1"> Madrid</label>
-            <label><input type="radio" name="q1" value="2"> Roma</label>
-        </div>
-        <div class="feedback" style="display:none;"></div>
-        <div class="explanation" style="display:none;"></div>
-    </div>
+<div class="trigger-icon">
+    <i id="openQuiz" class="fas fa-chart-bar"></i>
+</div>
 
-    <!-- Pregunta 2 -->
-    <div class="question" data-correct="1" data-explanation="Esta es la explicación de la respuesta correcta para la pregunta 2.">
-        <h2>¿Cuál es el resultado de 2 + 2?</h2>
-        <div class="options">
-            <label><input type="radio" name="q2" value="0"> 3</label>
-            <label><input type="radio" name="q2" value="1"> 4</label>
-            <label><input type="radio" name="q2" value="2"> 5</label>
+<div class="custom-modal-container" id="modal_container">
+    <div class="custom-modal">
+        <div class="custom-header">
+            <span id="close" class="close">&times;</span>
+            <h4>Cuestionario</h4>
         </div>
-        <div class="feedback" style="display:none;"></div>
-        <div class="explanation" style="display:none;"></div>
-    </div>
+        <div class="custom-content">
+            <div class="quiz-container">
+                <h1>Responde las siguientes preguntas</h1>
+                <div class="progress"><span id="progress-text">Pregunta 1 de 4</span></div>
+                
+                <!-- Pregunta 1 -->
+                <div class="question active" data-correct="0" data-explanation="La respuesta correcta es París, capital de Francia. Aquí puedes ver una imagen de París.">
+                    <h2>¿Cuál es la capital de Francia?</h2>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_as_seen_from_the_Tour_Saint-Jacques_2013-08.JPG" alt="Imagen de París">
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="0"> París</label>
+                        <label><input type="radio" name="q1" value="1"> Madrid</label>
+                        <label><input type="radio" name="q1" value="2"> Roma</label>
+                    </div>
+                    <div class="feedback"></div>
+                    <div class="explanation">
+                        <p>París es la capital de Francia, una ciudad con gran historia, cultura y gastronomía.</p>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Seine_and_notre_dame.jpg" alt="Detalle de París">
+                    </div>
+                </div>
 
-    <!-- Pregunta 3 -->
-    <div class="question" data-correct="2" data-explanation="Esta es la explicación de la respuesta correcta para la pregunta 3.">
-        <h2>¿Qué animal es conocido como el 'rey de la selva'?</h2>
-        <div class="options">
-            <label><input type="radio" name="q3" value="0"> Tigre</label>
-            <label><input type="radio" name="q3" value="1"> Elefante</label>
-            <label><input type="radio" name="q3" value="2"> León</label>
+                <!-- Pregunta 2 -->
+                <div class="question" data-correct="1" data-explanation="2 + 2 = 4. Aquí tienes un diagrama simple.">
+                    <h2>¿Cuál es el resultado de 2 + 2?</h2>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Arithmetic_symbols.png" alt="Símbolos aritméticos">
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="0"> 3</label>
+                        <label><input type="radio" name="q2" value="1"> 4</label>
+                        <label><input type="radio" name="q2" value="2"> 5</label>
+                    </div>
+                    <div class="feedback"></div>
+                    <div class="explanation">
+                        <p>La suma básica de 2 + 2 es 4.</p>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Arithmetic.svg" alt="Aritmética">
+                    </div>
+                </div>
+
+                <!-- Pregunta 3 -->
+                <div class="question" data-correct="2" data-explanation="El león es conocido como el 'rey de la selva'.">
+                    <h2>¿Qué animal es conocido como el 'rey de la selva'?</h2>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg" alt="León">
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="0"> Tigre</label>
+                        <label><input type="radio" name="q3" value="1"> Elefante</label>
+                        <label><input type="radio" name="q3" value="2"> León</label>
+                    </div>
+                    <div class="feedback"></div>
+                    <div class="explanation">
+                        <p>El león es comúnmente llamado el 'rey de la selva' por su porte y posición en la cadena alimenticia.</p>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Leo_persica_in_Gir_Forest.jpg" alt="León en su hábitat">
+                    </div>
+                </div>
+
+                <!-- Pregunta 4 -->
+                <div class="question" data-correct="1" data-explanation="El chino mandarín es el idioma más hablado del mundo.">
+                    <h2>¿Cuál es el idioma más hablado del mundo?</h2>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Idioma_mundo.jpg" alt="Mapa de idiomas">
+                    <div class="options">
+                        <label><input type="radio" name="q4" value="0"> Inglés</label>
+                        <label><input type="radio" name="q4" value="1"> Chino mandarín</label>
+                        <label><input type="radio" name="q4" value="2"> Español</label>
+                    </div>
+                    <div class="feedback"></div>
+                    <div class="explanation">
+                        <p>El chino mandarín cuenta con el mayor número de hablantes nativos en el mundo.</p>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Distribucion_de_lenguas.jpg" alt="Distribución de lenguas">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="checkBtn">Enviar</button>
+                    <button class="btn" id="nextBtn" style="display:none;">Siguiente</button>
+                    <button class="btn" id="finishBtn" style="display:none;">Finalizar</button>
+                </div>
+            </div>
         </div>
-        <div class="feedback" style="display:none;"></div>
-        <div class="explanation" style="display:none;"></div>
-    </div>
-
-    <!-- Pregunta 4 -->
-    <div class="question" data-correct="1" data-explanation="Esta es la explicación de la respuesta correcta para la pregunta 4.">
-        <h2>¿Cuál es el idioma más hablado del mundo?</h2>
-        <div class="options">
-            <label><input type="radio" name="q4" value="0"> Inglés</label>
-            <label><input type="radio" name="q4" value="1"> Chino mandarín</label>
-            <label><input type="radio" name="q4" value="2"> Español</label>
-        </div>
-        <div class="feedback" style="display:none;"></div>
-        <div class="explanation" style="display:none;"></div>
-    </div>
-
-    <div class="controls">
-        <button class="btn" id="checkBtn">Enviar</button>
-        <button class="btn" id="nextBtn" style="display:none;">Siguiente</button>
-        <button class="btn" id="finishBtn" style="display:none;">Finalizar</button>
     </div>
 </div>
 
 <script>
+    // Modal Logic
+    const openQuiz = document.getElementById('openQuiz');
+    const closeBtn = document.getElementById('close');
+    const modal = document.getElementById('modal_container');
+
+    openQuiz.addEventListener('click', () => {
+        modal.classList.add('show');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('show');
+    });
+
+    // Quiz Logic
     const questions = document.querySelectorAll('.question');
     const checkBtn = document.getElementById('checkBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -214,14 +363,15 @@
             feedback.classList.add('incorrect');
         }
 
-        explanation.textContent = question.getAttribute('data-explanation');
-
         feedback.style.display = 'block';
         explanation.style.display = 'block';
 
         // Deshabilitar los inputs
         const radios = question.querySelectorAll('input[type="radio"]');
         radios.forEach(r => r.disabled = true);
+
+        // Cambia el color del botón Enviar al presionarlo
+        checkBtn.classList.add('pressed');
 
         checkBtn.style.display = 'none';
         if (currentQuestion < questions.length - 1) {
@@ -237,10 +387,13 @@
         nextBtn.style.display = 'none';
         finishBtn.style.display = 'none';
         checkBtn.style.display = 'inline-block';
+        checkBtn.classList.remove('pressed');
     }
 
     function finishQuiz() {
         alert("Has finalizado el cuestionario.");
+        // Opcional: Cerrar el modal al finalizar
+        modal.classList.remove('show');
     }
 
     showQuestion(currentQuestion);
@@ -249,5 +402,6 @@
     nextBtn.addEventListener('click', nextQuestion);
     finishBtn.addEventListener('click', finishQuiz);
 </script>
+
 </body>
 </html>
