@@ -244,34 +244,38 @@
             margin-bottom: 30px;
             font-weight: 600;
             font-size: 1em;
+            color: #202937;
+        }
+
+        .summary-result::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #202937;
+            margin: 10px auto 0 auto;
+            border-radius: 2px;
         }
 
         .summary-item {
             margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .summary-item:last-child {
-            border-bottom: none;
+            padding: 20px;
+            border-radius: 6px;
+            background: #fafafa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .summary-item h3 {
             font-size: 1em;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #202937;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .summary-item p {
             margin: 5px 0;
             font-size: 0.95em;
-        }
-
-        .summary-item img {
-            max-width: 100%;
-            margin-top: 10px;
-            border-radius: 5px;
+            line-height: 1.4;
         }
 
         .summary-item .correct-answer {
@@ -292,6 +296,24 @@
             font-size: 0.95em;
             line-height: 1.4;
             color: #444;
+        }
+
+        .summary-item .answers-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-item .answers-row i {
+            font-size: 1.2em;
+        }
+
+        .summary-item .answers-row.correct .fa-check-circle {
+            color: #2f855a;
+        }
+
+        .summary-item .answers-row.incorrect .fa-times-circle {
+            color: #c53030;
         }
 
         /* Scroll styling */
@@ -323,8 +345,15 @@
                 top: 10px;
                 right: 10px;
             }
-        }
 
+            .summary-item {
+                padding: 15px;
+            }
+
+            .summary-item h3 {
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -548,8 +577,15 @@
 
             summaryItem.innerHTML = `
                 <h3>${qText}</h3>
-                <p><strong>Tu respuesta:</strong> <span class="${userChoice === correctChoice ? 'correct-answer' : 'your-answer'}">${userAnswerText}</span></p>
+                <div class="answers-row ${userChoice === correctChoice ? 'correct' : 'incorrect'}">
+                    ${userChoice === correctChoice 
+                        ? `<i class="fas fa-check-circle"></i>` 
+                        : `<i class="fas fa-times-circle"></i>`}
+                    <p><strong>Tu respuesta:</strong> <span class="${userChoice === correctChoice ? 'correct-answer' : 'your-answer'}">${userAnswerText}</span></p>
+                </div>
+                ${userChoice !== correctChoice ? `
                 <p><strong>Respuesta correcta:</strong> <span class="correct-answer">${correctAnswerText}</span></p>
+                ` : ''}
                 <div class="explanation-text"><strong>Explicación:</strong> ${explanation}</div>
             `;
             summaryDetails.appendChild(summaryItem);
