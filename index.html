@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         body {
-            background-color: #F8F9FD;
-            font-family: 'Muli', sans-serif;
+            background-color: #f5f5f5;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
+            color: #333;
         }
 
         .trigger-icon {
@@ -28,11 +30,16 @@
         .trigger-icon i {
             font-size: 50px;
             color: #202937;
+            transition: transform 0.3s ease;
+        }
+
+        .trigger-icon i:hover {
+            transform: scale(1.1);
         }
 
         .custom-modal-container {
             position: fixed;
-            background-color: rgba(0,0,0,0.67);
+            background-color: rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -53,56 +60,54 @@
 
         .custom-modal {
             background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             overflow: hidden;
             max-width: 90%;
             width: 600px;
-            font-family: Open Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
         }
 
         .custom-header {
             background-color: #202937;
             color: #fff;
-            padding: 30px 20px;
+            padding: 20px;
             text-align: center;
             position: relative;
         }
 
         .custom-header h4 {
             margin: 0;
-            font-size: 24px;
+            font-weight: 600;
+            font-size: 1.2rem;
         }
 
         .close {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 15px;
+            right: 20px;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 20px;
             color: #fff;
         }
 
         .custom-content {
             background-color: #fff;
             padding: 20px;
-            max-height: 80vh;
             overflow-y: auto;
+            flex: 1;
         }
 
         /* Estilos del Quiz */
-        .quiz-container {
-            max-width: 100%;
-            margin: 0 auto;
-            font-family: Arial, sans-serif;
-        }
-
         .quiz-container h1 {
             text-align: center;
             font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #333;
+            margin: 0 0 20px;
+            color: #202937;
+            font-weight: 600;
         }
 
         .progress {
@@ -117,7 +122,9 @@
 
         .question {
             display: none;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
         }
 
         .question.active {
@@ -125,14 +132,15 @@
         }
 
         .question h2 {
-            font-size: 1.2em;
+            font-size: 1.1em;
             margin-bottom: 15px;
             color: #202937;
+            font-weight: 500;
         }
 
         .question img {
             max-width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             border-radius: 5px;
         }
 
@@ -141,6 +149,7 @@
             margin-bottom: 10px;
             cursor: pointer;
             font-size: 0.95em;
+            line-height: 1.4;
         }
 
         .options input {
@@ -149,28 +158,31 @@
 
         .feedback {
             margin-top: 15px;
-            font-weight: bold;
+            font-weight: 500;
             padding: 10px;
             border-radius: 5px;
             display: none;
         }
 
         .feedback.correct {
-            background: #d4edda;
-            color: #155724;
+            background: #e3fceb;
+            color: #2f855a;
         }
 
         .feedback.incorrect {
-            background: #f8d7da;
-            color: #721c24;
+            background: #fde2e2;
+            color: #c53030;
         }
 
         .explanation {
             margin-top: 10px;
-            background: #e2e3e5;
+            background: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
             display: none;
+            font-size: 0.95em;
+            line-height: 1.4;
+            color: #444;
         }
 
         .explanation img {
@@ -188,12 +200,13 @@
             background: #202937d9;
             border: none;
             color: #ffffff;
-            padding: 10px 15px;
+            padding: 10px 20px;
             margin: 5px;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
             transition: background 0.3s;
+            font-weight: 500;
         }
 
         .btn:disabled {
@@ -205,7 +218,6 @@
             background: #202937;
         }
 
-        /* Clase para indicar que el botón se presionó */
         .btn.pressed {
             background: #202937;
         }
@@ -221,21 +233,23 @@
 
         .summary h2 {
             font-size: 1.3em;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
             color: #202937;
+            font-weight: 600;
         }
 
         .summary-result {
             text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 1em;
         }
 
         .summary-item {
             margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
 
         .summary-item:last-child {
@@ -246,6 +260,7 @@
             font-size: 1em;
             margin-bottom: 10px;
             color: #202937;
+            font-weight: 500;
         }
 
         .summary-item p {
@@ -260,20 +275,54 @@
         }
 
         .summary-item .correct-answer {
-            color: #155724;
-            font-weight: bold;
+            color: #2f855a;
+            font-weight: 600;
         }
 
         .summary-item .your-answer {
-            color: #721c24;
-            font-weight: bold;
+            color: #c53030;
+            font-weight: 600;
         }
 
         .summary-item .explanation-text {
-            background: #e2e3e5;
+            background: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
+            font-size: 0.95em;
+            line-height: 1.4;
+            color: #444;
+        }
+
+        /* Scroll styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .custom-header h4 {
+                font-size: 1rem;
+            }
+
+            .close {
+                top: 10px;
+                right: 10px;
+            }
         }
 
     </style>
@@ -401,7 +450,7 @@
     const summaryDetails = document.getElementById('summary-details');
 
     let currentQuestion = 0;
-    let userAnswers = []; // para almacenar las respuestas del usuario
+    let userAnswers = [];
 
     function showQuestion(index) {
         questions.forEach((q,i) => {
@@ -441,13 +490,11 @@
         const radios = question.querySelectorAll('input[type="radio"]');
         radios.forEach(r => r.disabled = true);
 
-        // Guardar la respuesta del usuario
         userAnswers[currentQuestion] = {
             userChoice: selected.value,
             correctChoice: correctIndex
         };
 
-        // Cambia el color del botón Enviar al presionarlo
         checkBtn.classList.add('pressed');
 
         checkBtn.style.display = 'none';
@@ -468,7 +515,6 @@
     }
 
     function finishQuiz() {
-        // Calcular el número de respuestas correctas
         let correctCount = 0;
         summaryDetails.innerHTML = '';
         for (let i = 0; i < questions.length; i++) {
@@ -497,7 +543,6 @@
                 correctCount++;
             }
 
-            // Construir el resumen de cada pregunta
             const summaryItem = document.createElement('div');
             summaryItem.classList.add('summary-item');
 
@@ -513,11 +558,7 @@
         summaryResult.textContent = `Has obtenido ${correctCount} de ${questions.length} respuestas correctas.`;
 
         // Ocultar el quiz y mostrar el resumen
-        for (let q of questions) {
-            q.style.display = 'none';
-        }
-        document.querySelector('.controls').style.display = 'none';
-        document.querySelector('.progress').style.display = 'none';
+        document.querySelectorAll('.question, .controls, .progress').forEach(el => el.style.display = 'none');
         summary.classList.add('active');
     }
 
