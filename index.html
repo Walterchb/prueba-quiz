@@ -210,12 +210,72 @@
             background: #202937;
         }
 
-        @media (max-width: 600px) {
-            .btn {
-                width: 100%;
-                margin: 5px 0;
-            }
+        /* Estilos para el resumen final */
+        .summary {
+            display: none;
         }
+
+        .summary.active {
+            display: block;
+        }
+
+        .summary h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #202937;
+        }
+
+        .summary-result {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .summary-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item h3 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            color: #202937;
+        }
+
+        .summary-item p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .summary-item img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .summary-item .correct-answer {
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .summary-item .your-answer {
+            color: #721c24;
+            font-weight: bold;
+        }
+
+        .summary-item .explanation-text {
+            background: #e2e3e5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -304,6 +364,13 @@
                     <button class="btn" id="nextBtn" style="display:none;">Siguiente</button>
                     <button class="btn" id="finishBtn" style="display:none;">Finalizar</button>
                 </div>
+
+                <!-- Resumen final -->
+                <div class="summary" id="summary">
+                    <h2>Resumen de tus respuestas</h2>
+                    <div class="summary-result" id="summary-result"></div>
+                    <div id="summary-details"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -329,8 +396,12 @@
     const nextBtn = document.getElementById('nextBtn');
     const finishBtn = document.getElementById('finishBtn');
     const progressText = document.getElementById('progress-text');
+    const summary = document.getElementById('summary');
+    const summaryResult = document.getElementById('summary-result');
+    const summaryDetails = document.getElementById('summary-details');
 
     let currentQuestion = 0;
+    let userAnswers = []; // para almacenar las respuestas del usuario
 
     function showQuestion(index) {
         questions.forEach((q,i) => {
@@ -370,6 +441,12 @@
         const radios = question.querySelectorAll('input[type="radio"]');
         radios.forEach(r => r.disabled = true);
 
+        // Guardar la respuesta del usuario
+        userAnswers[currentQuestion] = {
+            userChoice: selected.value,
+            correctChoice: correctIndex
+        };
+
         // Cambia el color del botón Enviar al presionarlo
         checkBtn.classList.add('pressed');
 
@@ -391,9 +468,57 @@
     }
 
     function finishQuiz() {
-        alert("Has finalizado el cuestionario.");
-        // Opcional: Cerrar el modal al finalizar
-        modal.classList.remove('show');
+        // Calcular el número de respuestas correctas
+        let correctCount = 0;
+        summaryDetails.innerHTML = '';
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i];
+            const qText = question.querySelector('h2').textContent;
+            const explanation = question.getAttribute('data-explanation');
+            const correctIndex = question.getAttribute('data-correct');
+            const options = question.querySelectorAll('input[type="radio"]');
+            const userChoice = userAnswers[i].userChoice;
+            const correctChoice = userAnswers[i].correctChoice;
+
+            let userAnswerText = '';
+            let correctAnswerText = '';
+
+            options.forEach((opt, index) => {
+                const label = opt.parentElement.innerText.trim();
+                if (index == userChoice) {
+                    userAnswerText = label;
+                }
+                if (index == correctChoice) {
+                    correctAnswerText = label;
+                }
+            });
+
+            if (userChoice === correctChoice) {
+                correctCount++;
+            }
+
+            // Construir el resumen de cada pregunta
+            const summaryItem = document.createElement('div');
+            summaryItem.classList.add('summary-item');
+
+            summaryItem.innerHTML = `
+                <h3>${qText}</h3>
+                <p><strong>Tu respuesta:</strong> <span class="${userChoice === correctChoice ? 'correct-answer' : 'your-answer'}">${userAnswerText}</span></p>
+                <p><strong>Respuesta correcta:</strong> <span class="correct-answer">${correctAnswerText}</span></p>
+                <div class="explanation-text"><strong>Explicación:</strong> ${explanation}</div>
+            `;
+            summaryDetails.appendChild(summaryItem);
+        }
+
+        summaryResult.textContent = `Has obtenido ${correctCount} de ${questions.length} respuestas correctas.`;
+
+        // Ocultar el quiz y mostrar el resumen
+        for (let q of questions) {
+            q.style.display = 'none';
+        }
+        document.querySelector('.controls').style.display = 'none';
+        document.querySelector('.progress').style.display = 'none';
+        summary.classList.add('active');
     }
 
     showQuestion(currentQuestion);
