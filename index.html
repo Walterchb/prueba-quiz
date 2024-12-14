@@ -370,11 +370,11 @@
         </div>
         <div class="custom-content">
             <div class="quiz-container">
-                <h1>Responde las siguientes preguntas</h1>
+                <h1 id="quizTitle">Responde las siguientes preguntas</h1>
                 <div class="progress"><span id="progress-text">Pregunta 1 de 4</span></div>
                 
                 <!-- Pregunta 1 -->
-                <div class="question active" data-correct="0" data-explanation="La respuesta correcta es París, capital de Francia. Aquí puedes ver una imagen de París.">
+                <div class="question active" data-correct="0">
                     <h2>¿Cuál es la capital de Francia?</h2>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_as_seen_from_the_Tour_Saint-Jacques_2013-08.JPG" alt="Imagen de París">
                     <div class="options">
@@ -390,7 +390,7 @@
                 </div>
 
                 <!-- Pregunta 2 -->
-                <div class="question" data-correct="1" data-explanation="2 + 2 = 4. Aquí tienes un diagrama simple.">
+                <div class="question" data-correct="1">
                     <h2>¿Cuál es el resultado de 2 + 2?</h2>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Arithmetic_symbols.png" alt="Símbolos aritméticos">
                     <div class="options">
@@ -406,7 +406,7 @@
                 </div>
 
                 <!-- Pregunta 3 -->
-                <div class="question" data-correct="2" data-explanation="El león es conocido como el 'rey de la selva'.">
+                <div class="question" data-correct="2">
                     <h2>¿Qué animal es conocido como el 'rey de la selva'?</h2>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg" alt="León">
                     <div class="options">
@@ -422,7 +422,7 @@
                 </div>
 
                 <!-- Pregunta 4 -->
-                <div class="question" data-correct="1" data-explanation="El chino mandarín es el idioma más hablado del mundo.">
+                <div class="question" data-correct="1">
                     <h2>¿Cuál es el idioma más hablado del mundo?</h2>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Idioma_mundo.jpg" alt="Mapa de idiomas">
                     <div class="options">
@@ -477,6 +477,7 @@
     const summary = document.getElementById('summary');
     const summaryResult = document.getElementById('summary-result');
     const summaryDetails = document.getElementById('summary-details');
+    const quizTitle = document.getElementById('quizTitle');
 
     let currentQuestion = 0;
     let userAnswers = [];
@@ -549,7 +550,8 @@
         for (let i = 0; i < questions.length; i++) {
             const question = questions[i];
             const qText = question.querySelector('h2').textContent;
-            const explanation = question.getAttribute('data-explanation');
+            const explanationBlock = question.querySelector('.explanation');
+            const explanationHTML = explanationBlock ? explanationBlock.innerHTML : '';
             const correctIndex = question.getAttribute('data-correct');
             const options = question.querySelectorAll('input[type="radio"]');
             const userChoice = userAnswers[i].userChoice;
@@ -586,7 +588,7 @@
                 ${userChoice !== correctChoice ? `
                 <p><strong>Respuesta correcta:</strong> <span class="correct-answer">${correctAnswerText}</span></p>
                 ` : ''}
-                <div class="explanation-text"><strong>Explicación:</strong> ${explanation}</div>
+                <div class="explanation-text"><strong>Explicación:</strong><br>${explanationHTML}</div>
             `;
             summaryDetails.appendChild(summaryItem);
         }
@@ -594,7 +596,7 @@
         summaryResult.textContent = `Has obtenido ${correctCount} de ${questions.length} respuestas correctas.`;
 
         // Ocultar el quiz y mostrar el resumen
-        document.querySelectorAll('.question, .controls, .progress').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.question, .controls, .progress, #quizTitle').forEach(el => el.style.display = 'none');
         summary.classList.add('active');
     }
 
